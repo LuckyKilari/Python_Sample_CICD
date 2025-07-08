@@ -24,7 +24,7 @@ pipeline {
         stage('Login to DockerHub') {
             steps {
                 script {
-                    docker.withRegistry('https://hub.docker.com/repositories/luckykilari/python-flask-app', DOCKERHUB_CREDENTIALS) {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
                         echo 'Logged into DockerHub'
                     }
                 }
@@ -34,7 +34,7 @@ pipeline {
         stage('Push Image') {
             steps {
                 script {
-                    docker.withRegistry('https://hub.docker.com/repositories/luckykilari/python-flask-app', DOCKERHUB_CREDENTIALS) {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
                         docker.image("${DOCKER_IMAGE}").push("latest")
                     }
                 }
