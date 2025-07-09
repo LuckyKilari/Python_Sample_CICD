@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/LuckyKilari/Python_Sample_CICD.git'
+                git branch: 'main', url: 'https://github.com/LuckyKilari/Python_Sample_CICD.git' 
             }
         }
 
