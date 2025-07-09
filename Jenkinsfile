@@ -34,11 +34,7 @@ pipeline {
 
         stage('Push Image') {
             steps {
-                script {
-                    docker.withRegistry('https://hub.docker.com/repositories/luckykilari', DOCKERHUB_CREDENTIALS) {
-                        docker.image("${DOCKER_IMAGE}").push("latest")
-                    }
-                }
+                sh "docker push $DOCKER_IMAGE:latest"
             }
         }
     }
