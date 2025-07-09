@@ -2,17 +2,18 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')  // ID of Jenkins credential
+        DOCKERHUB_CREDENTIALS = 'dockerhub-creds'  // ID of Jenkins credential
         DOCKER_IMAGE = 'luckykilari/python-flask-app' 
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/LuckyKilari/Python_Sample_CICD.git' 
+                git 'https://github.com/LuckyKilari/Python_Sample_CICD.git'
             }
         }
 
+        
         stage('Build Docker Image') {
             steps {
                 script {
@@ -21,20 +22,20 @@ pipeline {
             }
         }
 
-        stage('Login to DockerHub') {
+        stage('DockerHub Login') {
             steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-                        echo 'Logged into DockerHub'
-                    }
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    """
                 }
             }
-        }
+        }       
 
         stage('Push Image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                    docker.withRegistry('https://hub.docker.com/repositories/luckykilari', DOCKERHUB_CREDENTIALS) {
                         docker.image("${DOCKER_IMAGE}").push("latest")
                     }
                 }
