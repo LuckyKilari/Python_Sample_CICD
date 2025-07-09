@@ -17,7 +17,12 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t $DOCKER_IMAGE:latest ."
+                    // sh "docker build -t $DOCKER_IMAGE:latest ."
+                    // def version = "${BUILD_NUMBER}"
+                    // sh "docker build -t $DOCKER_IMAGE:$version ."
+                    sh "docker build -t $DOCKER_IMAGE:${BUILD_NUMBER} ."
+                    // Optionally also tag 'latest'
+                    // sh "docker tag $DOCKER_IMAGE:$version $DOCKER_IMAGE:latest"
                 }
             }
         }
@@ -34,7 +39,10 @@ pipeline {
 
         stage('Push Image') {
             steps {
-                sh "docker push $DOCKER_IMAGE:latest"
+                // def version = "${BUILD_NUMBER}"
+                // sh "docker push $DOCKER_IMAGE:$version"
+                sh "docker push $DOCKER_IMAGE:${BUILD_NUMBER}"
+                // sh "docker push $DOCKER_IMAGE:latest"
             }
         }
     }
