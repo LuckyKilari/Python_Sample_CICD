@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = 'dockerhub-creds'  // ID of Jenkins credential
         DOCKER_IMAGE = 'luckykilari/python-flask-app' 
+        SONARQUBE_ENV = 'SonarQube'
     }
 
     stages {
@@ -13,16 +14,25 @@ pipeline {
             }
         }
 
+        stage('SonarQube Scan') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=python-flask-app \
+                          -Dsonar.sources=. \
+                          -Dsonar.host.url=http://13.232.225.234:9000 \
+                          -Dsonar.login=$SONARQUBE_AUTH_TOKEN
+                    '''
+                }
+            }
+        }
+
         
         stage('Build Docker Image') {
             steps {
-                script {
-                    // sh "docker build -t $DOCKER_IMAGE:latest ."
-                    // def version = "${BUILD_NUMBER}"
-                    // sh "docker build -t $DOCKER_IMAGE:$version ."
-                    sh "docker build -t $DOCKER_IMAGE:${BUILD_NUMBER} ."
-                    // Optionally also tag 'latest'
-                    // sh "docker tag $DOCKER_IMAGE:$version $DOCKER_IMAGE:latest"
+                script {                    
+                    sh "docker build -t $DOCKER_IMAGE:${BUILD_NUMBER} ."                    
                 }
             }
         }
@@ -38,11 +48,9 @@ pipeline {
         }       
 
         stage('Push Image') {
-            steps {
-                // def version = "${BUILD_NUMBER}"
-                // sh "docker push $DOCKER_IMAGE:$version"
+            steps {               
                 sh "docker push $DOCKER_IMAGE:${BUILD_NUMBER}"
-                // sh "docker push $DOCKER_IMAGE:latest"
+                
             }
         }
     }
