@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = 'dockerhub-creds'  // ID of Jenkins credential
         DOCKER_IMAGE = 'luckykilari/python-flask-app' 
-        SONARQUBE_ENV = 'SonarQube'
+        // SONARQUBE_ENV = 'SonarQube'
     }
 
     stages {
@@ -44,14 +44,14 @@ pipeline {
 
         stage('SonarQube Scan') {
             steps {
-                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                withCredentials([string(credentialsId: 'SonarQube', variable: 'SONAR_TOKEN')]) {
                     sh '''
                            /opt/sonar-scanner/bin/sonar-scanner \
                           -Dsonar.projectName=python-demo \
                           -Dsonar.projectKey=python-flask-app \
                           -Dsonar.sources=. \
                           -Dsonar.host.url=http://13.232.225.234:9000/ \
-                          -Dsonar.login=$SONARQUBE_ENV
+                          -Dsonar.login=$SONAR_TOKEN
                     '''
                 }
             }
