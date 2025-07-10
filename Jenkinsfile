@@ -14,15 +14,44 @@ pipeline {
             }
         }
 
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+        //         sh """
+        //              mvn sonar:sonar \
+        //             -Dsonar.url=http://51.21.194.157:9000/ \
+        //             -Dsonar.login=$SONAR_TOKEN \
+        //             -Dsonar.java.binaries=. \
+        //             -Dsonar.projectName=demo \
+        //             -Dsonar.projectKey=demo
+        //             """
+        //         }
+
+        // stage('SonarQube Scan') {
+        //     steps {
+        //         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+        //             sh """
+        //                 sonar-scanner \
+        //                   -Dsonar.projectName=python-demo \
+        //                   -Dsonar.projectKey=python-flask-app \
+        //                   -Dsonar.sources=. \
+        //                   -Dsonar.url=http://13.232.225.234:9000/ \
+        //                   -Dsonar.login=$SONARQUBE_ENV
+        //             """
+        //         }
+        //     }
+        // }
+
         stage('SonarQube Scan') {
             steps {
                 withSonarQubeEnv("${SONARQUBE_ENV}") {
                     sh '''
                         sonar-scanner \
+                          -Dsonar.projectName=python-demo \
                           -Dsonar.projectKey=python-flask-app \
                           -Dsonar.sources=. \
-                          -Dsonar.host.url=http://13.232.225.234:9000 \
-                          -Dsonar.login=$SONARQUBE_AUTH_TOKEN
+                          -Dsonar.host.url=http://13.232.225.234:9000/ \
+                          -Dsonar.login=$SONARQUBE_ENV
                     '''
                 }
             }
