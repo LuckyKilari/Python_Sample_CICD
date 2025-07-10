@@ -14,34 +14,6 @@ pipeline {
             }
         }
 
-        // stage('SonarQube Analysis') {
-        //     steps {
-        //         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-        //         sh """
-        //              mvn sonar:sonar \
-        //             -Dsonar.url=http://51.21.194.157:9000/ \
-        //             -Dsonar.login=$SONAR_TOKEN \
-        //             -Dsonar.java.binaries=. \
-        //             -Dsonar.projectName=demo \
-        //             -Dsonar.projectKey=demo
-        //             """
-        //         }
-
-        // stage('SonarQube Scan') {
-        //     steps {
-        //         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-        //             sh """
-        //                 sonar-scanner \
-        //                   -Dsonar.projectName=python-demo \
-        //                   -Dsonar.projectKey=python-flask-app \
-        //                   -Dsonar.sources=. \
-        //                   -Dsonar.url=http://13.232.225.234:9000/ \
-        //                   -Dsonar.login=$SONARQUBE_ENV
-        //             """
-        //         }
-        //     }
-        // }
-
         stage('SonarQube Scan') {
             steps {
                 withCredentials([string(credentialsId: 'SonarQube', variable: 'SONAR_TOKEN')]) {
@@ -92,22 +64,22 @@ pipeline {
                 
             }
         }
-    }
-
-    stage('Deploy to EC2') {
-    steps {
-        sshagent(['EC2_SSH_KEY']) {
-            sh """
-                ssh -o StrictHostKeyChecking=no ubuntu@52.66.235.177 '
-                    docker pull luckykilari/python-flask-app:$BUILD_NUMBER &&
-                    docker stop flask-app || true &&
-                    docker rm flask-app || true &&
-                    docker run -d -p 5000:5000 --name flask-app luckykilari/python-flask-app:$BUILD_NUMBER
-                '
-            """
+    
+        stage('Deploy to EC2') {
+            steps {
+                sshagent(['EC2_SSH_KEY']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@52.66.235.177 '
+                            docker pull luckykilari/python-flask-app:$BUILD_NUMBER &&
+                            docker stop flask-app || true &&
+                            docker rm flask-app || true &&
+                            docker run -d -p 5000:5000 --name flask-app luckykilari/python-flask-app:$BUILD_NUMBER
+                        '
+                    """
+                }
+            }
         }
     }
-}
     
 }
 
