@@ -66,6 +66,16 @@ pipeline {
             }
         }
 
+        stage('Scan with Trivy') {
+            steps {
+                script {
+                    sh """
+                        trivy image --exit-code 0 --severity HIGH,CRITICAL --format table $DOCKER_IMAGE:$BUILD_NUMBER || true
+                    """
+                }
+            }
+        }
+
         stage('DockerHub Login') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
