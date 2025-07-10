@@ -93,6 +93,21 @@ pipeline {
             }
         }
     }
+
+    stage('Deploy to EC2') {
+    steps {
+        sshagent(['EC2_SSH_KEY']) {
+            sh """
+                ssh -o StrictHostKeyChecking=no ubuntu@52.66.235.177 '
+                    docker pull luckykilari/python-flask-app:$BUILD_NUMBER &&
+                    docker stop flask-app || true &&
+                    docker rm flask-app || true &&
+                    docker run -d -p 5000:5000 --name flask-app luckykilari/python-flask-app:$BUILD_NUMBER
+                '
+            """
+        }
+    }
+}
     
 }
 
