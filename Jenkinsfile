@@ -69,7 +69,7 @@ pipeline {
             steps {
                 sshagent(['EC2_SSH_KEY']) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ubuntu@52.66.235.177 '
+                        ssh -o StrictHostKeyChecking=no ubuntu@13.203.214.218 '
                             docker pull luckykilari/python-flask-app:$BUILD_NUMBER &&
                             docker stop flask-app || true &&
                             docker rm flask-app || true &&
