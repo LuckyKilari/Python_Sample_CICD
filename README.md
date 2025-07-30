@@ -1,9 +1,14 @@
 Prometheus installed steps: 
 Install Prometheus:
+
 wget https://github.com/prometheus/prometheus/releases/download/v2.53.5/prometheus-2.53.5.linux-amd64.tar.gz
+
 tar -xvf prometheus-2.53.5.linux-amd64.tar.gz
+
 mv prometheus-2.53.5.linux-amd64 prometheus
+
 cd prometheus/
+
 ./Prometheus &
 
 Access prometheus: http://server_ip:9090
